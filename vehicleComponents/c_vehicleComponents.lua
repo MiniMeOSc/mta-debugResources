@@ -61,7 +61,7 @@ function getWindowCenterPositionOnScreen(windowWidth, windowHeight)
     return windowX, windowY
 end
 
-function createvehicleComponentWindow()
+function createVehicleComponentWindow()
     -- create a new window centered on the screen
     local windowWidth = 574
     local windowHeight = 369
@@ -209,7 +209,7 @@ end
 function onStart()
     addCommandHandler("component", handleComponentCommand)
     addCommandHandler("vehicleComponentGui", handleComponentGuiCommand)
-    createvehicleComponentWindow()
+    createVehicleComponentWindow()
 end
 addEventHandler("onClientResourceStart", resourceRoot, onStart)
 
