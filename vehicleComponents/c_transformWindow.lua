@@ -39,8 +39,7 @@ end
 
 function scrollbarScrolled(transformWindow, controlName)
     -- prevent this event handler from executing after the scrollbar position was changed from code
-    --outputDebugString(string.format("scrollbarScrolled, handlingEditChanged = %s", tostring(handlingEditChanged)))
-    if handlingEditChanged then return end
+    if not transformWindow.handleScrollbarScrolled then return end
 
     -- retrieve the controls
     local scrollbar = transformWindow[controlName .. "Scrollbar"]
@@ -62,19 +61,16 @@ function scrollbarScrolled(transformWindow, controlName)
     local text = tostring(number)
 
     -- set the value and mark that we're changing it from the code
-    handlingScrollbarScrolled = true
-    --outputDebugString("handlingScrollbarScrolled = true")
+    transformWindow.handleEditChanged = false
     guiSetText(edit, text)
-    handlingScrollbarScrolled = false
-    --outputDebugString("handlingScrollbarScrolled = false")
+    transformWindow.handleEditChanged = true
 
     applyTransform(transformWindow, controlName, base)
 end
 
 function editChanged(transformWindow, controlName)
     -- prevent this event handler from executing after the edit text was changed from code
-    --outputDebugString(string.format("editChanged, handlingScrollbarScrolled = %s", tostring(handlingScrollbarScrolled)))
-    if handlingScrollbarScrolled then return end
+    if not transformWindow.handleEditChanged then return end
 
     -- retrieve the controls
     local scrollbar = transformWindow[controlName .. "Scrollbar"]
@@ -100,11 +96,9 @@ function editChanged(transformWindow, controlName)
     number = (number - min) / range * 100
 
     -- set the value and mark that we're changing it from the code
-    handlingEditChanged = true
-    --outputDebugString("handlingEditChanged = true")
+    transformWindow.handleScrollbarScrolled = false
     guiScrollBarSetScrollPosition(scrollbar, number)
-    handlingEditChanged = false
-    --outputDebugString("handlingEditChanged = false")
+    transformWindow.handleScrollbarScrolled = true
 
     applyTransform(transformWindow, controlName, base)
 end
@@ -118,7 +112,9 @@ end
 function createVehicleComponentTransformWindow(vehicle, component)
     local transformWindow = {
         vehicle = vehicle, 
-        component = component
+        component = component,
+        handleScrollbarScrolled = true,
+        handlingScrollbarChanged = true
     }
     
     -- create a new window centered on the screen
