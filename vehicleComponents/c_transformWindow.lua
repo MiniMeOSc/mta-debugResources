@@ -1,3 +1,41 @@
+function updateUiWithVehicleValues(transformWindow)
+    -- if either the window or vehicle are gone break out of the loop
+    if not isElement(transformWindow.window) or
+        not transformWindow.vehicle or 
+        not isElement(transformWindow.vehicle) or 
+        getElementType(transformWindow.vehicle) ~= "vehicle" 
+        or isVehicleBlown(transformWindow.vehicle) 
+    then 
+        return 
+    end
+
+    if guiCheckBoxGetSelected(transformWindow.getVehicleValuesCheckbox) then
+        -- update position
+        local base = getBaseRadioButtonSelected(transformWindow, "positionX")        
+        local x, y, z = getVehicleComponentPosition(transformWindow.vehicle, transformWindow.component, base)
+        guiSetText(transformWindow.positionXEdit, tostring(x))
+        guiSetText(transformWindow.positionYEdit, tostring(y))
+        guiSetText(transformWindow.positionZEdit, tostring(z))
+
+        -- update rotation
+        base = getBaseRadioButtonSelected(transformWindow, "rotationX")
+        x, y, z = getVehicleComponentRotation(transformWindow.vehicle, transformWindow.component, base)
+        guiSetText(transformWindow.rotationXEdit, tostring(x))
+        guiSetText(transformWindow.rotationYEdit, tostring(y))
+        guiSetText(transformWindow.rotationZEdit, tostring(z))
+
+        -- update scale
+        base = getBaseRadioButtonSelected(transformWindow, "scaleX")
+        x, y, z = getVehicleComponentScale(transformWindow.vehicle, transformWindow.component, base)
+        guiSetText(transformWindow.scaleXEdit, tostring(x))
+        guiSetText(transformWindow.scaleYEdit, tostring(y))
+        guiSetText(transformWindow.scaleZEdit, tostring(z))
+    end
+
+    -- loop
+    setTimer(updateUiWithVehicleValues, 100, 1, transformWindow)
+end
+
 function getBaseRadioButtonSelected(transformWindow, controlName)
     -- check which base radiobutton is selected
     for _, radioButtonName in ipairs({ "Root", "Parent", "World" }) do
@@ -140,6 +178,7 @@ function createVehicleComponentTransformWindow(vehicle, component)
     guiScrollBarSetScrollPosition(transformWindow.positionXScrollbar, 50.0)
     addEventHandler("onClientGUIScroll", transformWindow.positionXScrollbar, function() scrollbarScrolled(transformWindow, "positionX") end, false)
     addEventHandler("onClientGUIChanged", transformWindow.positionXEdit, function() editChanged(transformWindow, "positionX") end, false)
+	addEventHandler("onClientGUIFocus", transformWindow.positionXEdit, function() guiCheckBoxSetSelected(transformWindow.getVehicleValuesCheckbox, false) end, false)
 
     -- create controls for position y
     transformWindow.positionYLabel = guiCreateLabel(6, 51, 189, 15, "Y", false, transformWindow.positionTab)
@@ -150,6 +189,7 @@ function createVehicleComponentTransformWindow(vehicle, component)
     guiScrollBarSetScrollPosition(transformWindow.positionYScrollbar, 50.0)
     addEventHandler("onClientGUIScroll", transformWindow.positionYScrollbar, function() scrollbarScrolled(transformWindow, "positionY") end, false)
     addEventHandler("onClientGUIChanged", transformWindow.positionYEdit, function() editChanged(transformWindow, "positionY") end, false)
+	addEventHandler("onClientGUIFocus", transformWindow.positionYEdit, function() guiCheckBoxSetSelected(transformWindow.getVehicleValuesCheckbox, false) end, false)
     
     -- create controls for position z
     transformWindow.positionZLabel = guiCreateLabel(6, 97, 189, 15, "Z", false, transformWindow.positionTab)
@@ -160,6 +200,7 @@ function createVehicleComponentTransformWindow(vehicle, component)
     guiScrollBarSetScrollPosition(transformWindow.positionZScrollbar, 50.0)
     addEventHandler("onClientGUIScroll", transformWindow.positionZScrollbar, function() scrollbarScrolled(transformWindow, "positionZ") end, false)
     addEventHandler("onClientGUIChanged", transformWindow.positionZEdit, function() editChanged(transformWindow, "positionZ") end, false)
+	addEventHandler("onClientGUIFocus", transformWindow.positionZEdit, function() guiCheckBoxSetSelected(transformWindow.getVehicleValuesCheckbox, false) end, false)
     
     -- create controls for position base selection
     transformWindow.positionBaseLabel = guiCreateLabel(6, 145, 189, 15, "Base", false, transformWindow.positionTab)
@@ -177,6 +218,7 @@ function createVehicleComponentTransformWindow(vehicle, component)
     setElementData(transformWindow.rotationXScrollbar, 'maximumValue', 360.0)
     addEventHandler("onClientGUIScroll", transformWindow.rotationXScrollbar, function() scrollbarScrolled(transformWindow, "rotationX") end, false)
     addEventHandler("onClientGUIChanged", transformWindow.rotationXEdit, function() editChanged(transformWindow, "rotationX") end, false)
+	addEventHandler("onClientGUIFocus", transformWindow.rotationXEdit, function() guiCheckBoxSetSelected(transformWindow.getVehicleValuesCheckbox, false) end, false)
 
     -- create controls for rotation y
     transformWindow.rotationYLabel = guiCreateLabel(6, 51, 189, 15, "Y", false, transformWindow.rotationTab)
@@ -186,6 +228,7 @@ function createVehicleComponentTransformWindow(vehicle, component)
     setElementData(transformWindow.rotationYScrollbar, 'maximumValue', 360.0)
     addEventHandler("onClientGUIScroll", transformWindow.rotationYScrollbar, function() scrollbarScrolled(transformWindow, "rotationY") end, false)
     addEventHandler("onClientGUIChanged", transformWindow.rotationYEdit, function() editChanged(transformWindow, "rotationY") end, false)
+	addEventHandler("onClientGUIFocus", transformWindow.rotationYEdit, function() guiCheckBoxSetSelected(transformWindow.getVehicleValuesCheckbox, false) end, false)
     
     -- create controls for rotation z
     transformWindow.rotationZLabel = guiCreateLabel(6, 97, 189, 15, "Z", false, transformWindow.rotationTab)
@@ -195,6 +238,7 @@ function createVehicleComponentTransformWindow(vehicle, component)
     setElementData(transformWindow.rotationZScrollbar, 'maximumValue', 360.0)
     addEventHandler("onClientGUIScroll", transformWindow.rotationZScrollbar, function() scrollbarScrolled(transformWindow, "rotationZ") end, false)
     addEventHandler("onClientGUIChanged", transformWindow.rotationZEdit, function() editChanged(transformWindow, "rotationZ") end, false)
+	addEventHandler("onClientGUIFocus", transformWindow.rotationZEdit, function() guiCheckBoxSetSelected(transformWindow.getVehicleValuesCheckbox, false) end, false)
     
     -- create controls for rotation base selection
     transformWindow.rotationBaseLabel = guiCreateLabel(6, 145, 189, 15, "Base", false, transformWindow.rotationTab)
@@ -213,6 +257,7 @@ function createVehicleComponentTransformWindow(vehicle, component)
     guiScrollBarSetScrollPosition(transformWindow.scaleXScrollbar, 50.0)
     addEventHandler("onClientGUIScroll", transformWindow.scaleXScrollbar, function() scrollbarScrolled(transformWindow, "scaleX") end, false)
     addEventHandler("onClientGUIChanged", transformWindow.scaleXEdit, function() editChanged(transformWindow, "scaleX") end, false)
+	addEventHandler("onClientGUIFocus", transformWindow.scaleXEdit, function() guiCheckBoxSetSelected(transformWindow.getVehicleValuesCheckbox, false) end, false)
 
     -- create controls for scale y
     transformWindow.scaleYLabel = guiCreateLabel(6, 51, 189, 15, "Y", false, transformWindow.scaleTab)
@@ -223,6 +268,7 @@ function createVehicleComponentTransformWindow(vehicle, component)
     guiScrollBarSetScrollPosition(transformWindow.scaleYScrollbar, 50.0)
     addEventHandler("onClientGUIScroll", transformWindow.scaleYScrollbar, function() scrollbarScrolled(transformWindow, "scaleY") end, false)
     addEventHandler("onClientGUIChanged", transformWindow.scaleYEdit, function() editChanged(transformWindow, "scaleY") end, false)
+	addEventHandler("onClientGUIFocus", transformWindow.scaleYEdit, function() guiCheckBoxSetSelected(transformWindow.getVehicleValuesCheckbox, false) end, false)
     
     -- create controls for scale z
     transformWindow.scaleZLabel = guiCreateLabel(6, 97, 189, 15, "Z", false, transformWindow.scaleTab)
@@ -233,6 +279,7 @@ function createVehicleComponentTransformWindow(vehicle, component)
     guiScrollBarSetScrollPosition(transformWindow.scaleZScrollbar, 50.0)
     addEventHandler("onClientGUIScroll", transformWindow.scaleZScrollbar, function() scrollbarScrolled(transformWindow, "scaleZ") end, false)
     addEventHandler("onClientGUIChanged", transformWindow.scaleZEdit, function() editChanged(transformWindow, "scaleZ") end, false)
+	addEventHandler("onClientGUIFocus", transformWindow.scaleZEdit, function() guiCheckBoxSetSelected(transformWindow.getVehicleValuesCheckbox, false) end, false)
     
     -- create controls for scale base selection
     transformWindow.scaleBaseLabel = guiCreateLabel(6, 145, 189, 15, "Base", false, transformWindow.scaleTab)
@@ -241,9 +288,15 @@ function createVehicleComponentTransformWindow(vehicle, component)
     transformWindow.scaleBaseWorldRadiobutton = guiCreateRadioButton(125, 162, 51, 15, "world", false, transformWindow.scaleTab)
     guiRadioButtonSetSelected(transformWindow.scaleBaseRootRadiobutton, true)
 
+    -- checkbox to toggle getting vehicle values
+    transformWindow.getVehicleValuesCheckbox = guiCreateCheckBox(14, 236, 97, 17, "get values", false, false, transformWindow.window)    
+
     -- close button
     transformWindow.closeButton = guiCreateButton(116, 236, 99, 17, "Close", false, transformWindow.window)
     addEventHandler("onClientGUIClick", transformWindow.closeButton, function() closeVehicleComponentTransformWindow(transformWindow) end, false)
+
+    -- periodically update values in the ui
+    setTimer(updateUiWithVehicleValues, 100, 1, transformWindow)
     
     return transformWindow
 end
