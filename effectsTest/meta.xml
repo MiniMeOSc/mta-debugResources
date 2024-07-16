@@ -1,0 +1,10 @@
+<meta>
+	<info author="Mini-Me" type="script" name="effectsTest" />
+    <script src="s_effectsTest.lua" />
+    <script src="c_attachEffect.lua" type="client" protected="true" />
+    <script src="c_effectsTest.lua" type="client" protected="true" />
+	<file src="effects.xml" />
+	<settings>
+		<setting name="*ButtonToggleEffectGuiVisibility" value="8" />
+	</settings>
+</meta>
