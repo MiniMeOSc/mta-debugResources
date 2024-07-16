@@ -1,6 +1,7 @@
 <meta>
 	<info author="Mini-Me" type="script" name="vehicleComponents" />
 	<script src="c_vehicleComponents.lua" type="client" cache="false" />
+	<script src="c_transformWindow.lua" type="client" cache="false" />
 	<script src="s_vehicleComponents.lua" type="server" />
 	<settings>
 		<setting name="*ButtonToggleComponentGuiVisibility" value="9" />

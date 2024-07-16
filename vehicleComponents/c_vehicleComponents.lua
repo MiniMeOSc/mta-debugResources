@@ -1,4 +1,5 @@
 local g_vehicleComponentWindow = {}
+local g_vehicleComponentTransformWindows = {}
 local g_vehicleComponents = {}
 
 function populateComponentGridList()
@@ -17,7 +18,7 @@ function populateComponentGridList()
     for name,visibility in pairs(components) do
         g_vehicleComponents[name] = tostring(visibility)
     end
-
+    
     -- (re-)apply the filter
     filterChanged()
 end
@@ -84,7 +85,10 @@ function createVehicleComponentWindow()
     -- create buttons to toggle visibility
     g_vehicleComponentWindow.showButton = guiCreateButton(459, 92, 106, 17, "Show", false, g_vehicleComponentWindow.window)
     g_vehicleComponentWindow.hideButton = guiCreateButton(459, 114, 106, 17, "Hide", false, g_vehicleComponentWindow.window)
-    
+
+    -- create button to open transform window
+    g_vehicleComponentWindow.transformButton = guiCreateButton(461, 168, 104, 17, "Transform", false, g_vehicleComponentWindow.window)
+
     -- create button to close the window
     --g_vehicleComponentWindow.closeButton = guiCreateButton(459, 266, 106, 17, "Close window", false, g_vehicleComponentWindow.window)
 
@@ -97,6 +101,7 @@ function createVehicleComponentWindow()
     addEventHandler("onClientGUIClick", g_vehicleComponentWindow.selectAllButton, selectAll, false)
     addEventHandler("onClientGUIClick", g_vehicleComponentWindow.showButton, function(button) visibilityButtonClicked(true) end, false)
     addEventHandler("onClientGUIClick", g_vehicleComponentWindow.hideButton, function(button) visibilityButtonClicked(false) end, false)
+    addEventHandler("onClientGUIClick", g_vehicleComponentWindow.transformButton, openVehicleComponentTransformWindow, false)
     --addEventHandler("onClientGUIClick", g_vehicleComponentWindow.closeButton, function(button) guiSetInputEnabled(false) guiSetVisible(g_vehicleComponentWindow.window, false) end, false)
 end
 
@@ -182,6 +187,34 @@ function handleComponentCommand(commandName, component, strVisible)
     -- apply visibility
     setVehicleComponentVisible(vehicle, component, visible)
     triggerServerEvent("OnClientVehicleComponentVisibilityChanged", localPlayer, vehicle, component, visible)
+end
+
+function vehicleComponentTransformWindowCloseCallback(index)
+    table.remove(g_vehicleComponentTransformWindows, index)
+end
+
+function openVehicleComponentTransformWindow()
+    local vehicle = getPedOccupiedVehicle(localPlayer)
+    if not vehicle then 
+        return 
+    end
+
+    -- get which components are selected and open the transform window for each
+    local selectedItems = guiGridListGetSelectedItems(g_vehicleComponentWindow.componentGridlist)
+    -- loop through all selected items -> the list contains an item each for both columns
+    for i, data in ipairs(selectedItems) do
+        -- only process the first column
+        if data["column"] == 1 then
+            -- get the selected  component name from the ui
+            local component = guiGridListGetItemText(g_vehicleComponentWindow.componentGridlist, data["row"], 1)
+
+            -- create a window for this component
+            local window = createVehicleComponentTransformWindow(vehicle, component)
+            local i = table.insert(g_vehicleComponentTransformWindows, window)
+            window.index = i
+            window.closeCallback = vehicleComponentTransformWindowCloseCallback
+        end
+    end
 end
 
 function handleComponentGuiCommand(commandName)
