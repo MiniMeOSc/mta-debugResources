@@ -185,16 +185,18 @@ function handleComponentCommand(commandName, component, strVisible)
 end
 
 function handleComponentGuiCommand(commandName)
-    -- check if the player is driving a car. Abort if they aren't
+    -- check if the player is driving a car or 
+    -- if they aren't if the window is still open and the want to close it
+    local visible = guiGetVisible(g_vehicleComponentWindow.window)
     local thePlayer = getLocalPlayer()
-    if not getPedOccupiedVehicle(thePlayer) then
+    if not getPedOccupiedVehicle(thePlayer) and not visible then
         return
     end
 
     -- update the list's content and show the window
     populateComponentGridList()
 
-    local visible = not guiGetVisible(g_vehicleComponentWindow.window)
+    visible = not visible
     guiSetVisible(g_vehicleComponentWindow.window, visible)
     showCursor(visible)
     if visible then 
